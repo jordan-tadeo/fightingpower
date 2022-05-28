@@ -1,5 +1,7 @@
 import pygame
 
+from character import Character
+
 
 W, H = 720, 480
 
@@ -16,9 +18,8 @@ if __name__ == '__main__':
     floor.fill(RED_BROWN)
     floor_coord = (0, H - 32)
 
-    player = pygame.Surface((32, 32))
-    player.fill(BLUE)
-    player_coord = [16, H - 64]
+    player = Character(100, 200, 200)
+    player.rect.fill(BLUE)
 
     # Variable to keep the main loop running
     running = True
@@ -26,7 +27,7 @@ if __name__ == '__main__':
     while running:
         screen.fill((0,0,0))
         screen.blit(floor, floor_coord)
-        screen.blit(player, player_coord)
+        screen.blit(player.rect, (player.get_xpos(), player.get_ypos()))
         pygame.display.flip()
 
         # Look at every event in the queue
@@ -37,7 +38,7 @@ if __name__ == '__main__':
                 if event.key == pygame.K_ESCAPE:
                     running = False
                 if event.key == pygame.K_d:
-                    player_coord[0] += 16
+                    player.set_xpos(player.get_xpos() + 8)
 
             # Did the user click the window close button? If so, stop the loop.
             elif event.type == pygame.QUIT:

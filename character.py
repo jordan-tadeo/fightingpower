@@ -1,8 +1,12 @@
+import pygame
+
 class Character:
-    def __init__(self, health, xpos, ypos, zpos):
+    def __init__(self, health, xpos, ypos):
         self._health = health
         self._xpos = xpos
         self._ypos = ypos
+
+        self.rect = pygame.Surface((32, 64))
 
 # Getters/Setters
     def get_health(self): 
