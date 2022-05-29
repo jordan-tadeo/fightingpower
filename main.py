@@ -1,8 +1,8 @@
 import pygame
 from net.network import Network
 from net.server import read_pos, make_pos
-from stage import Stage
-from character import Character
+from local.stage import Stage
+from local.character import Character
 
 
 clock = pygame.time.Clock()
