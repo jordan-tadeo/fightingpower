@@ -1,4 +1,5 @@
 import pygame
+from network import Network
 
 from stage import Stage
 from character import Character
@@ -15,6 +16,13 @@ STAGE_COLOR = (190, 210, 255)
 
 world_objs = []
 
+def read_pos(str):
+    str = str.split(",")
+    return float(str[0]), float(str[1])
+
+def make_pos(tup):
+    return str(tup[0]) + "," + str(tup[1])
+
 def draw_frame(win, objs):
     win.fill(BG_COLOR)
     for o in objs:
@@ -30,13 +38,18 @@ if __name__ == '__main__':
     
     screen = pygame.display.set_mode((W, H))
 
+    n = Network()
+    
+
     stage = Stage()
     facade = (0, H - 84, W, 84)
-    player = Character(100, 300, 300)
+    p = Character(100, 300, 300)
+    p2 = Character(100, 200, 200)
 
     world_objs.append(stage)
     world_objs.append(facade)
-    world_objs.append(player)
+    world_objs.append(p)
+    world_objs.append(p2)
 
     # Variable to keep the main loop running
     running = True
@@ -44,15 +57,29 @@ if __name__ == '__main__':
     while running:
         clock.tick(60)
         draw_frame(screen, world_objs)
-        player.move()
+        p.move()
 
-        # Check if player is hitting the ground
-        if player.colliding_with(stage):
-            player.ground = True
-            # Set player height to be 1 pixel into the ground
-            player.set_y(stage.rects[0][1] - player.height + 1)
+        # Check if p is hitting the ground
+        if p.colliding_with(stage):
+            p.ground = True
+            # Set p height to be 1 pixel into the ground
+            p.set_y(stage.rects[0][1] - p.height + 1)
         else:
-            player.ground = False
+            p.ground = False
+
+        
+        # receive p2 position from server
+        try:
+            # print('>>>')
+            n.send(make_pos((p.get_x(), p.get_y())))
+            p2Pos = read_pos(n.send(make_pos((p2.x, p2.y))))
+            # print(f'other player pos = {p2Pos}')
+            # print('>>>')
+            p2.set_x(p2Pos[0])
+            p2.set_y(p2Pos[1])
+            p2.update_pos()
+        except:
+            print("could not find player 2!")
 
         # Look at every event in the queue
         for event in pygame.event.get():

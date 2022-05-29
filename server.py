@@ -1,10 +1,10 @@
 import socket
 from _thread import *
-import sys
+from pygame import time
 
 # IPv4 Address of host
-server = "192.168.1.93"
-port = 5555
+server = "10.40.16.19"
+port = 63553
 
 # Hold players positions on server [p1, p2]
 pos = [(0,0), (100,100)]
@@ -16,7 +16,7 @@ pos = [(0,0), (100,100)]
 
 def read_pos(str):
     str = str.split(",")
-    return int(str[0]), int(str[1])
+    return float(str[0]), float(str[1])
 
 def make_pos(tup):
     return str(tup[0]) + "," + str(tup[1])
@@ -29,13 +29,9 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 #bind server/port to socket
 try:
     s.bind((server,port))
+    print(f'successfully bound server to socket {s}')
 except socket.error as e:
     str(e)
-
-# Listen for client connection, allow 2 clients
-s.listen(2)
-print("Server started")
-print("Waiting for connection . . .")
 
 # Threaded client function
 def threaded_client(conn, player):
@@ -60,8 +56,8 @@ def threaded_client(conn, player):
                 else:
                     reply = pos[1]
                     
-                print(f"Recieved : {data}")
-                print(f"Sending : {reply}")
+                # print(f"Recieved : {data}")
+                # print(f"Sending : {reply}")
 
             conn.sendall(str.encode(make_pos(reply)))
 
@@ -71,16 +67,20 @@ def threaded_client(conn, player):
     print("Lost connection")
     conn.close()
 
-
+# Listen for client connection, allow 2 clients
+s.listen(2)
+print("Server started")
+print("Waiting for connection . . .")
 
 currentPlayer = 0
 # Continue to look for connections
 while True:
+    clock = time.Clock().tick(60)
     # conn - connection object
     # addr - IP
     conn, addr = s.accept()
     print(f"Connected to: {addr}")
 
     # Start threaded process
-    start_new_thread(threaded_client, (conn,currentPlayer))
+    start_new_thread(threaded_client, (conn, currentPlayer))
     currentPlayer += 1

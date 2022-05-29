@@ -107,6 +107,8 @@ class Character:
             else:
                 self.x = W - self.width
 
+    def update_pos(self):
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
     # inflict injury
     def injure(self, body_part):
@@ -119,6 +121,7 @@ class Character:
                 self.set_health(self.get_health-5)
             case "leg":
                 self.set_health(self.get_health-5)
+
 
 
     #   v   Getters/Setters   v
