@@ -14,11 +14,15 @@ RED_BROWN = (200, 90, 85)
 BLUE = (28, 98, 128)
 STAGE_COLOR = (190, 210, 255)
 
+bg = pygame.image.load('local/mountains.png')
+bg = pygame.transform.scale(bg, (W, H))
+
 world_objs = []
 
 
 def draw_frame(win, objs):
     win.fill(BG_COLOR)
+    win.blit(bg, (0, 0))
     for o in objs:
         try:
             o.draw(win)

@@ -67,20 +67,21 @@ def threaded_client(conn, player):
     print("Lost connection")
     conn.close()
 
-# Listen for client connection, allow 2 clients
-s.listen(2)
-print("Server started")
-print("Waiting for connection . . .")
+if __name__ == "__main__":
+    # Listen for client connection, allow 2 clients
+    s.listen(2)
+    print("Server started")
+    print("Waiting for connection . . .")
 
-currentPlayer = 0
-# Continue to look for connections
-while True:
-    clock = time.Clock().tick(60)
-    # conn - connection object
-    # addr - IP
-    conn, addr = s.accept()
-    print(f"Connected to: {addr}")
+    currentPlayer = 0
+    # Continue to look for connections
+    while True:
+        clock = time.Clock().tick(60)
+        # conn - connection object
+        # addr - IP
+        conn, addr = s.accept()
+        print(f"Connected to: {addr}")
 
-    # Start threaded process
-    start_new_thread(threaded_client, (conn, currentPlayer))
-    currentPlayer += 1
+        # Start threaded process
+        start_new_thread(threaded_client, (conn, currentPlayer))
+        currentPlayer += 1
