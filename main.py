@@ -71,8 +71,8 @@ if __name__ == '__main__':
         # receive p2 position from server
         try:
             # print('>>>')
-            n.send(make_pos((p.get_x(), p.get_y())))
-            p2Pos = read_pos(n.send(make_pos((p2.x, p2.y))))
+            p2Pos = read_pos(n.send_and_recv(make_pos((p.get_x(), p.get_y()))))
+            #p2Pos = read_pos(n.send(make_pos((p2.x, p2.y))))
             # print(f'other player pos = {p2Pos}')
             # print('>>>')
             p2.set_x(p2Pos[0])

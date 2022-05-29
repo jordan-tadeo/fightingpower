@@ -17,17 +17,14 @@ class Network:
         try:
             self.sock.connect(self.addr)
             print("Client socket connection succeeded")
-            # Send client info to server
             return self.sock.recv(2048).decode()
         except:
             print("Client socket connection failed")
             pass
 
-    def send(self, data):
+    def send_and_recv(self, data):
         try:
-            # print('sending...')
             self.sock.send(str.encode(data))
-            # print('receiving...')
             return self.sock.recv(2048).decode()
         except socket.error as e:
             print("ERROR IN NETWORK.PY")
