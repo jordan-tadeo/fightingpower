@@ -29,11 +29,9 @@ def draw_frame(win, objs):
 
 if __name__ == '__main__':
     pygame.init()
-    
-    screen = pygame.display.set_mode((W, H))
 
     n = Network()
-    
+    screen = pygame.display.set_mode((W, H))
 
     stage = Stage()
     facade = (0, H - 84, W, 84)
@@ -45,7 +43,6 @@ if __name__ == '__main__':
     world_objs.append(p)
     world_objs.append(p2)
 
-    # Variable to keep the main loop running
     running = True
     # Main loop
     while running:
@@ -60,15 +57,10 @@ if __name__ == '__main__':
             p.set_y(stage.rects[0][1] - p.height + 1)
         else:
             p.ground = False
-
         
         # receive p2 position from server
         try:
-            # print('>>>')
             p2Pos = read_pos(n.send_and_recv(make_pos((p.get_x(), p.get_y()))))
-            #p2Pos = read_pos(n.send(make_pos((p2.x, p2.y))))
-            # print(f'other player pos = {p2Pos}')
-            # print('>>>')
             p2.set_x(p2Pos[0])
             p2.set_y(p2Pos[1])
             p2.update_pos()
