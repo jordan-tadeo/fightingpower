@@ -21,7 +21,8 @@ class Network:
         except:
             print("Client socket connection failed")
             pass
-
+    
+    # Send our info, and receive (return) other player position info
     def send_and_recv(self, data):
         try:
             self.sock.send(str.encode(data))
