@@ -1,1 +1,5 @@
-# 1,000,000,000 copies sold
+# TO DO:
+    - add fighting mechanics
+    - add WAN functionality
+    - ???
+    - profit
