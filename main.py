@@ -1,6 +1,6 @@
 import pygame
-from network import Network
-
+from net.network import Network
+from net.server import read_pos, make_pos
 from stage import Stage
 from character import Character
 
@@ -16,12 +16,6 @@ STAGE_COLOR = (190, 210, 255)
 
 world_objs = []
 
-def read_pos(str):
-    str = str.split(",")
-    return float(str[0]), float(str[1])
-
-def make_pos(tup):
-    return str(tup[0]) + "," + str(tup[1])
 
 def draw_frame(win, objs):
     win.fill(BG_COLOR)
