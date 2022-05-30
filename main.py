@@ -1,3 +1,4 @@
+import traceback
 import pygame
 from net.network import Network
 from net.server import read_pos, make_pos
@@ -9,10 +10,11 @@ clock = pygame.time.Clock()
 
 W, H = 720, 480
 
+STAGE_COLOR = (190, 210, 255)
 BG_COLOR = (0, 30, 20)
 RED_BROWN = (200, 90, 85)
 BLUE = (28, 98, 128)
-STAGE_COLOR = (190, 210, 255)
+BLACK = (0, 0, 0)
 
 bg = pygame.image.load('local/mountains.png')
 bg = pygame.transform.scale(bg, (W, H))
@@ -26,8 +28,10 @@ def draw_frame(win, objs):
     for o in objs:
         try:
             o.draw(win)
-        except:
-            pygame.draw.rect(win, STAGE_COLOR, o)
+        except Exception as e:
+            # pygame.draw.rect(win, STAGE_COLOR, (W, H))
+            traceback.print_exception(e)
+            pass
     pygame.display.update()
 
 
@@ -40,24 +44,27 @@ if __name__ == '__main__':
     stage = Stage()
     facade = (0, H - 84, W, 84)
     p = Character(100, 300, 300)
-    p2 = Character(100, 200, 200)
+    p2 = Character(100, 200, 200, True)
 
     world_objs.append(stage)
-    world_objs.append(facade)
+    # world_objs.append(facade)
     world_objs.append(p)
     world_objs.append(p2)
+
 
     running = True
     # Main loop
     while running:
         clock.tick(60)
         draw_frame(screen, world_objs)
+
         p.move()
 
         # Check if p is hitting the ground
         if p.colliding_with(stage):
             p.ground = True
-            # Set p height to be 1 pixel into the ground
+            p.vely = 0
+            # Set player y value to be on the ground
             p.set_y(stage.rects[0][1] - p.height + 1)
         else:
             p.ground = False

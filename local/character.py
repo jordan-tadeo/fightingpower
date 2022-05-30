@@ -1,13 +1,16 @@
 import pygame
+from local.anim import SpriteSheet
+
 
 W, H = 720, 480
 
-GRAVITY = .45
-JUMP_STRENGTH = 8
+GRAVITY = .15
+JUMP_STRENGTH = 4
 FRICTION = 0.5
 
+
 class Character:
-    def __init__(self, health, x, y):
+    def __init__(self, health, x, y, npc=False):
         self.health = health
         self.x = x
         self.y = y
@@ -19,13 +22,17 @@ class Character:
         self.agility = 1.0
 
         self.width = 32
-        self.height = 64
+        self.height = 92
 
         self.color = (120, 130, 30)
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
-        self.ground = False
+        self.sprite_sheet = SpriteSheet()
 
+        self.ground = True
+        self.npc = npc
+
+        self.facing = 'right'
 
     #   v   Methods   v
 
@@ -35,7 +42,8 @@ class Character:
     
     # draw this character on 'win' pygame display obj
     def draw(self, win):
-        pygame.draw.rect(win, self.color, self.rect)
+        # pygame.draw.rect(win, self.color, self.rect)
+        win.blit(self.sprite_sheet.draw(), (self.x - 128, self.y - 128))
     
     # return if colliding with obj (only set up to work with stage rect rn)
     def colliding_with(self, obj):
@@ -52,41 +60,41 @@ class Character:
 
     # update player location with gravity, input, etc.
     def move(self):
-        # apply gravity
-        if not self.ground:
-            jump_available = False
-            self.accy += GRAVITY
-        else:
-            jump_available = True
-            self.vely = 0
-
         # list of all keys, 0 if not pressed, 1 if pressed
         keys = pygame.key.get_pressed()
+
+        # select idle animation, right or left
+        if abs(self.velx) <= 0.2 and self.ground:
+            if self.facing == 'right':
+                self.sprite_sheet.select_anim(0)
+            else:
+                self.sprite_sheet.select_anim(1)
         
-        # W, A, S, D
-        # if keys[pygame.K_w]:
-        #     self.vely -= self.movement_speed
+        # apply gravity
+        if not self.ground:
+            self.accy += GRAVITY
+            if self.facing == 'right':
+                self.sprite_sheet.select_anim(4)
+            else:
+                self.sprite_sheet.select_anim(5)
+        
+        # jump
+        if keys[pygame.K_SPACE] and self.ground:
+            # print(f"JUMP {pygame.time.get_ticks()}")
+            self.accy -= JUMP_STRENGTH
+            self.ground = False
+
+        # move left and right
         if keys[pygame.K_a] and self.velx > - self.max_speed:
             self.accx = - self.agility
-        # if keys[pygame.K_s]:
-        #     self.vely += self.movement_speed
+            self.facing = 'left'
+            if self.ground:
+                self.sprite_sheet.select_anim(3)
         if keys[pygame.K_d] and self.velx < self.max_speed:
             self.accx = self.agility
-        
-        # SPACE
-        if keys[pygame.K_SPACE] and jump_available:
-            self.accy -= JUMP_STRENGTH
-        
-        # apply acceleration to velocity
-        self.velx += self.accx
-        self.vely += self.accy
-        # apply velocity to position
-        self.x += self.velx
-        self.y += self.vely
-        # update character's rectangle obj
-        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
-        # reset velocity for next frame
-        self.accx, self.accy = 0, 0
+            self.facing = 'right'
+            if self.ground:
+                self.sprite_sheet.select_anim(2)
 
         # add friction to X movement
         if not abs(self.velx) < FRICTION:
@@ -99,6 +107,7 @@ class Character:
         else:
             self.velx = 0
 
+        # keep player on screen (x-axis)
         bounds_check = self.out_of_bounds()
         if bounds_check:
             self.velx *= -1
@@ -106,6 +115,19 @@ class Character:
                 self.x = 0
             else:
                 self.x = W - self.width
+
+        # apply acceleration to velocity
+        self.velx += self.accx
+        self.vely += self.accy
+
+        # apply velocity to position
+        self.x += self.velx
+        self.y += self.vely
+
+        # reset accel for next frame
+        self.accx, self.accy = 0, 0
+
+        self.update_pos()
 
     def update_pos(self):
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
@@ -121,8 +143,6 @@ class Character:
                 self.set_health(self.get_health-5)
             case "leg":
                 self.set_health(self.get_health-5)
-
-
 
     #   v   Getters/Setters   v
 
