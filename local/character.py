@@ -25,6 +25,7 @@ class Character:
 
         self.color = (120, 130, 30)
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.center = self.rect.center
 
         self.sprite_sheet = SpriteSheet()
 
@@ -32,6 +33,8 @@ class Character:
         self.npc = npc
 
         self.facing = 'right'
+        self.attacking = False
+        self.atk_start_time = 0
 
     # return health if character is alive, or 0 if not
     def is_alive(self):
@@ -39,8 +42,8 @@ class Character:
     
     # draw this character on 'win' pygame display obj
     def draw(self, win):
-        # pygame.draw.rect(win, self.color, self.rect)
-        win.blit(self.sprite_sheet.draw(), (self.x - 128, self.y - 128))
+        # spygame.draw.rect(win, self.color, self.rect)
+        win.blit(self.sprite_sheet.draw(), (self.center[0] - 200, self.center[1] - 200))
     
     # return if colliding with obj (only set up to work with stage rect rn)
     def colliding_with(self, obj):
@@ -62,13 +65,31 @@ class Character:
             # did the user hit mouse button
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:
-                   print("clicka clicka")
+                    match self.facing:
+                        case 'right':
+                            self.sprite_sheet.select_anim(6)
+                        case 'left':
+                            self.sprite_sheet.select_anim(7)
+                    self.attacking = True
+                    self.atk_start_time = pygame.time.get_ticks()
+                if event.button == 3:
+                    match self.facing:
+                        case 'right':
+                            self.sprite_sheet.select_anim(8)
+                        case 'left':
+                            self.sprite_sheet.select_anim(9)
+                    self.attacking = True
+                    self.atk_start_time = pygame.time.get_ticks()
+        
+        if pygame.time.get_ticks() > self.atk_start_time + (self.sprite_sheet.curr_anim[1] * self.sprite_sheet.anim_speed):
+            # attack animation is over
+            self.attacking = False
 
         # list of all keys, 0 if not pressed, 1 if pressed
         keys = pygame.key.get_pressed()
 
         # select idle animation, right or left
-        if abs(self.velx) <= 0.2 and self.ground:
+        if abs(self.velx) <= 0.2 and self.ground and not self.attacking:
             if self.facing == 'right':
                 self.sprite_sheet.select_anim(0)
             else:
@@ -79,7 +100,7 @@ class Character:
             self.accy += GRAVITY
             if self.facing == 'right':
                 self.sprite_sheet.select_anim(4)
-            else:
+            elif not self.attacking:
                 self.sprite_sheet.select_anim(5)
         
         # jump
@@ -89,12 +110,12 @@ class Character:
             self.ground = False
 
         # move left and right
-        if keys[pygame.K_a] and self.velx > - self.max_speed:
+        if keys[pygame.K_a] and self.velx > - self.max_speed and not self.attacking:
             self.accx = - self.agility
             self.facing = 'left'
             if self.ground:
                 self.sprite_sheet.select_anim(3)
-        if keys[pygame.K_d] and self.velx < self.max_speed:
+        if keys[pygame.K_d] and self.velx < self.max_speed and not self.attacking:
             self.accx = self.agility
             self.facing = 'right'
             if self.ground:
@@ -135,6 +156,7 @@ class Character:
 
     def update_pos(self):
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.center = self.rect.center
 
     # inflict injury
     def injure(self, body_part):

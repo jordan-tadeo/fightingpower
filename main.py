@@ -7,7 +7,7 @@ from local.character import Character
 
 
 W, H = 720, 480
-STAGE_COLOR = (190, 210, 255)
+STAGE_COLOR = (90, 10, 55)
 BG_COLOR = (0, 30, 20)
 RED_BROWN = (200, 90, 85)
 BLUE = (28, 98, 128)
@@ -36,7 +36,7 @@ if __name__ == '__main__':
 
     world_objs = []
 
-    n = Network()
+    # n = Network()
     screen = pygame.display.set_mode((W, H))
 
     stage = Stage()
@@ -68,6 +68,7 @@ if __name__ == '__main__':
             p.ground = False
         
         # receive p2 position from server
+        """
         try:
             p2Pos = read_pos(n.send_and_recv(make_pos((p.get_x(), p.get_y()))))
             p2.set_x(p2Pos[0])
@@ -75,7 +76,7 @@ if __name__ == '__main__':
             p2.update_pos()
         except:
             print("could not find player 2!")
-        
+        """
         # Look at every event in the queue
         for event in pygame.event.get():
             # Did the user hit a key?

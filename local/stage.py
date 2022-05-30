@@ -1,7 +1,7 @@
 import pygame
 
 
-def_color = (190, 210, 255)
+def_color = (10, 10, 10)
 
 
 class Stage:
