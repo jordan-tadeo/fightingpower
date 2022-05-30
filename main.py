@@ -16,7 +16,7 @@ RED_BROWN = (200, 90, 85)
 BLUE = (28, 98, 128)
 BLACK = (0, 0, 0)
 
-bg = pygame.image.load('local/mountains.png')
+bg = pygame.image.load('local/res/mountains.png')
 bg = pygame.transform.scale(bg, (W, H))
 
 world_objs = []
@@ -38,7 +38,7 @@ def draw_frame(win, objs):
 if __name__ == '__main__':
     pygame.init()
 
-    n = Network()
+    # n = Network()
     screen = pygame.display.set_mode((W, H))
 
     stage = Stage()
@@ -70,14 +70,14 @@ if __name__ == '__main__':
             p.ground = False
         
         # receive p2 position from server
-        try:
+        """try:
             p2Pos = read_pos(n.send_and_recv(make_pos((p.get_x(), p.get_y()))))
             p2.set_x(p2Pos[0])
             p2.set_y(p2Pos[1])
             p2.update_pos()
         except:
             print("could not find player 2!")
-
+        """
         # Look at every event in the queue
         for event in pygame.event.get():
             # Did the user hit a key?

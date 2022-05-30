@@ -4,8 +4,8 @@ from local.anim import SpriteSheet
 
 W, H = 720, 480
 
-GRAVITY = .15
-JUMP_STRENGTH = 4
+GRAVITY = .45
+JUMP_STRENGTH = 8
 FRICTION = 0.5
 
 
@@ -60,6 +60,13 @@ class Character:
 
     # update player location with gravity, input, etc.
     def move(self):
+        # check for a mouse press
+        for event in pygame.event.get():
+            # did the user hit mouse button
+            if event.type == pygame.MOUSEBUTTONUP:
+                if event.button == 1:
+                   print("clicka clicka")
+
         # list of all keys, 0 if not pressed, 1 if pressed
         keys = pygame.key.get_pressed()
 

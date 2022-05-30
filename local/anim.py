@@ -19,7 +19,7 @@ class SpriteSheet():
 		self.curr_frame = [0, self.curr_anim[0]]
 		self.curr_frame = [0, self.get_frame(0)]
 
-		self.anim_speed = 128
+		self.anim_speed = 64
 		self.last_frame_time = pygame.time.get_ticks()
 
 		self.sheets = [sheet_idle, sheet_idlef, sheet_run, sheet_runf, sheet_jump, sheet_jumpf]
