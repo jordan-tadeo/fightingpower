@@ -3,7 +3,7 @@ from _thread import *
 from pygame import time
 
 # IPv4 Address of host
-server = "10.40.16.19"
+server = "127.0.0.1"
 port = 63553
 
 # Hold players positions on server [p1, p2]
