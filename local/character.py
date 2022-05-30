@@ -3,7 +3,6 @@ from local.anim import SpriteSheet
 
 
 W, H = 720, 480
-
 GRAVITY = .45
 JUMP_STRENGTH = 8
 FRICTION = 0.5
@@ -33,8 +32,6 @@ class Character:
         self.npc = npc
 
         self.facing = 'right'
-
-    #   v   Methods   v
 
     # return health if character is alive, or 0 if not
     def is_alive(self):
@@ -150,8 +147,6 @@ class Character:
                 self.set_health(self.get_health-5)
             case "leg":
                 self.set_health(self.get_health-5)
-
-    #   v   Getters/Setters   v
 
     def get_health(self):
         return self.health

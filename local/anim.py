@@ -24,11 +24,9 @@ class SpriteSheet():
 
 		self.sheets = [sheet_idle, sheet_idlef, sheet_run, sheet_runf, sheet_jump, sheet_jumpf]
 
-
 	def select_anim(self, sheet_id):
 		self.curr_anim = [self.sheets[sheet_id][0], self.sheets[sheet_id][1]]
 		
-
 	def get_frame(self, frame, scale=2):
 		image = pygame.Surface((self.w, self.h)).convert_alpha()
 		image.blit(self.curr_anim[0], (0, 0), ((frame * self.w) + 29, 18, self.w - 32, self.h - 32))

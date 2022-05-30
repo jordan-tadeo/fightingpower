@@ -2,17 +2,8 @@ import socket
 from _thread import *
 from pygame import time
 
-# IPv4 Address of host
-server = "127.0.0.1"
-port = 63553
-
 # Hold players positions on server [p1, p2]
-pos = [(0,0), (100,100)]
-
-###########################################################################
-# Helper functions to send and recieve Client positions between server    #
-# and client as tuple                                                     #
-###########################################################################
+pos = [(0,0), (0,0)]
 
 def read_pos(str):
     str = str.split(",")
@@ -20,18 +11,6 @@ def read_pos(str):
 
 def make_pos(tup):
     return str(tup[0]) + "," + str(tup[1])
-
-############################################################################
-
-# Initialize socket
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-#bind server/port to socket
-try:
-    s.bind((server,port))
-    print(f'successfully bound server to socket {s}')
-except socket.error as e:
-    str(e)
 
 # Threaded client function
 def threaded_client(conn, player):
@@ -55,9 +34,6 @@ def threaded_client(conn, player):
                     reply = pos[0]
                 else:
                     reply = pos[1]
-                    
-                # print(f"Recieved : {data}")
-                # print(f"Sending : {reply}")
 
             conn.sendall(str.encode(make_pos(reply)))
 
@@ -68,6 +44,20 @@ def threaded_client(conn, player):
     conn.close()
 
 if __name__ == "__main__":
+    # IPv4 Address of host
+    server = "127.0.0.1"
+    port = 63553
+
+    # Initialize socket
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    #bind server/port to socket
+    try:
+        s.bind((server,port))
+        print(f'successfully bound server to socket {s}')
+    except socket.error as e:
+        str(e)
+
     # Listen for client connection, allow 2 clients
     s.listen(2)
     print("Server started")
