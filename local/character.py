@@ -17,8 +17,8 @@ class Character:
         self.velx, self.vely = 0, 0
         self.accx, self.accy = 0, 0
 
-        self.max_speed = 5.5
-        self.agility = 1.0
+        self.max_speed = 7.5
+        self.agility = 3.0
 
         self.width = 32
         self.height = 92
