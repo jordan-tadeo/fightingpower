@@ -10,9 +10,6 @@ class Network:
         self.addr = (self.server, self.port)
         self.pos = self.connect()
 
-    def getPos(self):
-        return self.pos
-
     def connect(self):
         try:
             self.sock.connect(self.addr)
@@ -28,5 +25,7 @@ class Network:
             self.sock.send(str.encode(data))
             return self.sock.recv(2048).decode()
         except socket.error as e:
-            print("ERROR IN NETWORK.PY")
-            print(f" * * * Error with socket {socket}: {e}")
+            print(f"* Network.py > error with socket {socket} >> {e}")
+
+    def getPos(self):
+        return self.pos

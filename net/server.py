@@ -2,9 +2,6 @@ import socket
 from _thread import *
 from pygame import time
 
-# Hold players positions on server [p1, p2]
-pos = [(0,0), (0,0)]
-
 def read_pos(str):
     str = str.split(",")
     return float(str[0]), float(str[1])
@@ -14,17 +11,14 @@ def make_pos(tup):
 
 # Threaded client function
 def threaded_client(conn, player):
-
     # Send position to respective connected client
     conn.send(str.encode(make_pos(pos[player])))
-
     reply = ""
     while True:
         try:
             # 2048 = accepted bits from client
             data = read_pos(conn.recv(2048).decode())
             pos[player] = data
-
             if not data:
                 print("Disconnected")
                 break
@@ -34,15 +28,14 @@ def threaded_client(conn, player):
                     reply = pos[0]
                 else:
                     reply = pos[1]
-
             conn.sendall(str.encode(make_pos(reply)))
-
         except:
             break
-
+    
     print("Lost connection")
     conn.close()
 
+# Starting the server and listening for connections
 if __name__ == "__main__":
     # IPv4 Address of host
     server = "127.0.0.1"
@@ -54,7 +47,7 @@ if __name__ == "__main__":
     #bind server/port to socket
     try:
         s.bind((server,port))
-        print(f'successfully bound server to socket {s}')
+        print(f'Successfully bound server to socket {s}')
     except socket.error as e:
         str(e)
 
@@ -63,10 +56,11 @@ if __name__ == "__main__":
     print("Server started")
     print("Waiting for connection . . .")
 
-    currentPlayer = 0
+    # Hold players positions on server [p1, p2]
+    pos = [(0,0), (0,0)]
     # Continue to look for connections
+    currentPlayer = 0
     while True:
-        clock = time.Clock().tick(60)
         # conn - connection object
         # addr - IP
         conn, addr = s.accept()
@@ -75,3 +69,4 @@ if __name__ == "__main__":
         # Start threaded process
         start_new_thread(threaded_client, (conn, currentPlayer))
         currentPlayer += 1
+        clock = time.Clock().tick(60)

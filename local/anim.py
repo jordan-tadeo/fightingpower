@@ -36,27 +36,21 @@ class SpriteSheet():
 		image = pygame.Surface((self.w, self.h)).convert_alpha()
 		image.blit(self.curr_anim[0], (0, 0), ((frame * self.w), 0, self.w, self.h))
 		image = pygame.transform.scale(image, (self.w * scale, self.h * scale))
-
-		self.frame_center = image.get_rect().center
-
 		image.set_colorkey((0,0,0))
-
+		self.frame_center = image.get_rect().center
 		return image
 
 	def step_frame(self):
 		if pygame.time.get_ticks() > self.last_frame_time + self.anim_speed:
 			self.last_frame_time = pygame.time.get_ticks()
-
 			framenumber = 0
-
-			self.curr_frame[0] += 1
 			if self.curr_anim[2]:
 				self.curr_frame[0] %= self.curr_anim[1]
 				framenumber =  self.curr_anim[1] - self.curr_frame[0] - 1
 			else:
 				self.curr_frame[0] %= self.curr_anim[1]
 				framenumber = self.curr_frame[0]
-
+			self.curr_frame[0] += 1
 			self.curr_frame[1] = self.get_frame(framenumber)
 		else:
 			pass

@@ -7,15 +7,9 @@ from local.character import Character
 
 
 W, H = 720, 480
-STAGE_COLOR = (90, 10, 55)
-BG_COLOR = (0, 30, 20)
-RED_BROWN = (200, 90, 85)
-BLUE = (28, 98, 128)
-BLACK = (0, 0, 0)
 
 
 def draw_frame(win, objs):
-    win.fill(BG_COLOR)
     win.blit(bg, (0, 0))
     for o in objs:
         try:
@@ -29,35 +23,29 @@ def draw_frame(win, objs):
 
 if __name__ == '__main__':
     pygame.init()
+    screen = pygame.display.set_mode((W, H))
     clock = pygame.time.Clock()
+    # n = Network()
 
     bg = pygame.image.load('local/res/mountains.png')
     bg = pygame.transform.scale(bg, (W, H))
 
-    world_objs = []
-
-    # n = Network()
-    screen = pygame.display.set_mode((W, H))
-
     stage = Stage()
-    facade = (0, H - 84, W, 84)
-    p = Character(100, 300, 300)
-    p2 = Character(100, 200, 200, True)
+    p = Character(100, 300, 300, stage)
+    # p2 = Character(100, 200, 200, True)
 
+    world_objs = []
     world_objs.append(stage)
-    # world_objs.append(facade)
     world_objs.append(p)
-    world_objs.append(p2)
+    # world_objs.append(p2)
 
 
     running = True
     # Main loop
     while running:
-        clock.tick(60)
-        draw_frame(screen, world_objs)
-
         p.move()
 
+        """
         # Check if p is hitting the ground
         if p.colliding_with(stage):
             p.ground = True
@@ -66,7 +54,8 @@ if __name__ == '__main__':
             p.set_y(stage.rects[0][1] - p.height + 1)
         else:
             p.ground = False
-        
+        """
+
         # receive p2 position from server
         """
         try:
@@ -87,3 +76,6 @@ if __name__ == '__main__':
             # Did the user click the window close button? If so, stop the loop.
             elif event.type == pygame.QUIT:
                 running = False
+
+        draw_frame(screen, world_objs)
+        clock.tick(60)
