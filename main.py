@@ -45,17 +45,6 @@ if __name__ == '__main__':
     while running:
         p.move()
 
-        """
-        # Check if p is hitting the ground
-        if p.colliding_with(stage):
-            p.ground = True
-            p.vely = 0
-            # Set player y value to be on the ground
-            p.set_y(stage.rects[0][1] - p.height + 1)
-        else:
-            p.ground = False
-        """
-
         # receive p2 position from server
         """
         try:
