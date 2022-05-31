@@ -65,8 +65,7 @@ class Character:
         type = 0
         # check for a mouse press
         for event in pygame.event.get():
-            # did the user hit mouse button
-            if event.type == pygame.MOUSEBUTTONUP:
+            if event.type == pygame.MOUSEBUTTONDOWN:
                type = event.button
         
         if pygame.time.get_ticks() > self.atk_start_time + \

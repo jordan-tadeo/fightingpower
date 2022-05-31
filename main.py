@@ -44,7 +44,6 @@ if __name__ == '__main__':
     # Main loop
     while running:
         p.move()
-
         # receive p2 position from server
         """
         try:
@@ -65,6 +64,5 @@ if __name__ == '__main__':
             # Did the user click the window close button? If so, stop the loop.
             elif event.type == pygame.QUIT:
                 running = False
-
         draw_frame(screen, world_objs)
         clock.tick(60)
