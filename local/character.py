@@ -41,10 +41,10 @@ class Character(Actor):
     def draw(self, win):
         # pygame.draw.rect(win, self.color, self.rect)
         self.curr_anim = self.animator.curr_anim
+        self.animator.animate()
         #self.window.blit(self.animator., (center[0] - (sprite.get_width() / 2),
         #                center[1] - (sprite.get_height() / 2)))
         # win.blit(self.sprite_sheet.draw(), (self.center[0] - 200, self.center[1] - 200))
-        pass
 
     # return if colliding with obj (only set up to work with stage rect rn)
     def colliding_with(self):
@@ -120,13 +120,13 @@ class Character(Actor):
         if not self.attacking:
             # move left
             if keys[pygame.K_a] and self.velx > - self.max_speed:
-                # self.accx = - self.agility
+                self.accx = - self.agility
                 self.facing = 'left'
                 if self.ground:
                     self.animator.animate('runf', self.center)
             # move right
             if keys[pygame.K_d] and self.velx < self.max_speed:
-                # self.accx = self.agility
+                self.accx = self.agility
                 self.facing = 'right'
                 if self.ground:
                     self.animator.animate('run', self.center)
@@ -183,12 +183,11 @@ class Character(Actor):
     def move(self):
         
         self.jump()
-        self.idle()
+        # self.idle()
         self.run()
         self.attack()
         self.apply_physics()
         self.update_pos()
-
         # print(f"self.x {self.x}, self.y {self.y}")
         
         

@@ -3,7 +3,7 @@ import pygame
 from os import *
 from local.imagehandler import ImageHandler
 
-DEFAULT_FRAMETIME = 8
+DEFAULT_FRAMETIME = 64
 BLUE = (0, 0, 255)
 
 class Animator:
@@ -33,24 +33,27 @@ class Animator:
         return int(self.images[name].get_width() / self.sprite_size[0])
     
     # set up for 1-D animation spritesheet images only
-    def animate(self, name, center=(0, 0), frame_time=DEFAULT_FRAMETIME):
+    def animate(self, name=None, center=(0, 0), frame_time=DEFAULT_FRAMETIME):
         now = pygame.time.get_ticks()
-        # how many frames in this animation?
-        num_frames = self.get_num_frames(name)
-        # self.curr_anim = name
         if now > self.timer + frame_time:
             self.timer = now
-            if self.curr_anim is not name or self.curr_frame > num_frames - 1:
-                self.curr_frame = 0
-            
-            self.imagehandler = ImageHandler(self.images[name],
-                                        (1, num_frames), self.sprite_size)
-
-            # print(f"num_frames={num_frames} curr_anim={self.curr_anim} curr_frame={self.curr_frame}")
-
-            self.draw(self.imagehandler.get_sprite((0, self.curr_frame)), center)
-
             self.curr_frame += 1
+
+        # how many frames in this animation?
+        if not name:
+            name = self.curr_anim
+        num_frames = self.get_num_frames(name)
+        self.curr_anim = name
+
+        if self.curr_anim is not name or self.curr_frame > num_frames - 1:
+                self.curr_frame = 0
+
+        self.imagehandler = ImageHandler(self.images[name],
+                                        (1, num_frames), self.sprite_size)
+        
+        # print(f'trying to draw frame no. {self.curr_frame} on image {name}')
+        self.draw(self.imagehandler.get_sprite((0, self.curr_frame)), center)
+        print(f'drawing frame no. {self.curr_frame} on image {name} at {pygame.time.get_ticks()}')
     
     def draw(self, sprite, center):
         self.window.blit(sprite, (center[0] - (sprite.get_width() / 2),
