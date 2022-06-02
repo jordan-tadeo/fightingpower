@@ -4,12 +4,13 @@ from os import *
 from local.imagehandler import ImageHandler
 
 DEFAULT_FRAMETIME = 64
+DEFAULT_SPRITE_SCALE = 2
 BLUE = (0, 0, 255)
 
 class Animator:
     # Constructor: decide what directory we will be pulling sprites from,
     # get all those images loaded up and ready.
-    def __init__(self, images_dir='./sprites/', sprite_size=(200, 200), window=None):
+    def __init__(self, images_dir='local/sprites/', sprite_size=(200, 200), window=None):
         self.images_dir = images_dir
         self.images = {}
         self.sprite_size = sprite_size
@@ -45,19 +46,23 @@ class Animator:
         num_frames = self.get_num_frames(name)
         self.curr_anim = name
 
-        if self.curr_anim is not name or self.curr_frame > num_frames - 1:
+        if self.curr_frame > num_frames - 1:
                 self.curr_frame = 0
 
         self.imagehandler = ImageHandler(self.images[name],
                                         (1, num_frames), self.sprite_size)
         
-        # print(f'trying to draw frame no. {self.curr_frame} on image {name}')
-        self.draw(self.imagehandler.get_sprite((0, self.curr_frame)), center)
-        print(f'drawing frame no. {self.curr_frame} on image {name} at {pygame.time.get_ticks()}')
+        # If we are facing left, reverse the order that we traverse the sprite
+        # sheet.
+        if name.endswith('f'):
+            self.draw(self.imagehandler.get_sprite((0, num_frames - self.curr_frame - 1)), center)
+        else:
+            self.draw(self.imagehandler.get_sprite((0, self.curr_frame)), center)
     
     def draw(self, sprite, center):
+        # Scale the sprite before we draw it
+        sprite = pygame.transform.scale(sprite, (self.sprite_size[0] * DEFAULT_SPRITE_SCALE, 
+                                        self.sprite_size[1] * DEFAULT_SPRITE_SCALE))
+        # draw the sprite
         self.window.blit(sprite, (center[0] - (sprite.get_width() / 2),
                         center[1] - (sprite.get_height() / 2)))
-        test_rect = pygame.Surface((100, 100))
-        test_rect.fill((255, 0, 255))
-        self.window.blit(test_rect, (0, 0))

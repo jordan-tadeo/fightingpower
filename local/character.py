@@ -1,6 +1,6 @@
 import pygame
-from local.actor import Actor
 from local.animator import Animator
+from local.animator import DEFAULT_FRAMETIME
 
 
 W, H = 720, 480
@@ -8,17 +8,17 @@ BOX_COLOR = (120, 130, 30)
 GRAVITY = .45
 JUMP_STRENGTH = 8.0
 FRICTION = 0.5
-SPRITE_SIZE = (200, 200)
 
 
-class Character(Actor):
-    def __init__(self, health, x, y, window, stage=None, npc=False):
+class Character:
+    def __init__(self, health, x, y, screen=None, stage=None, npc=False):
         self.color = BOX_COLOR
         self.health = health
         self.x = x
         self.y = y
         self.width, self.height = 32, 92
-        self.animator = Animator('local/sprites/', SPRITE_SIZE, window)
+        self.animator = Animator(window=screen)
+        self.curr_anim = 'idle'
 
         self.velx, self.vely = 0, 0
         self.accx, self.accy = 0, 0
@@ -30,25 +30,30 @@ class Character(Actor):
         self.ground = True
         self.facing = 'right'
         self.attacking = False
-        self.atk_start_time = 0
+        self.atk_start_time = pygame.time.get_ticks()
 
         self.stage_rect = stage.rect
         self.npc = npc
-
-        self.curr_anim = self.animator.curr_anim
     
     # draw this character on 'win' pygame display obj
     def draw(self, win):
         # pygame.draw.rect(win, self.color, self.rect)
-        self.curr_anim = self.animator.curr_anim
-        self.animator.animate()
-        #self.window.blit(self.animator., (center[0] - (sprite.get_width() / 2),
-        #                center[1] - (sprite.get_height() / 2)))
-        # win.blit(self.sprite_sheet.draw(), (self.center[0] - 200, self.center[1] - 200))
-
+        self.animator.curr_anim = self.curr_anim
+        self.animator.animate(self.curr_anim, self.center)
+    
     # return if colliding with obj (only set up to work with stage rect rn)
     def colliding_with(self):
         return self.rect.colliderect(self.stage_rect)
+
+    def hit_ground(self):
+        # Check if p is hitting the ground
+        if self.colliding_with():
+            self.ground = True
+            self.vely = 0
+            # Set player y value to be on the ground
+            self.set_y(self.stage_rect[1] - self.height + 1)
+        else:
+            self.ground = False
 
     # returns 1 if left side, 2 if right, 0 if within bounds
     def is_out_of_bounds(self):
@@ -67,7 +72,7 @@ class Character(Actor):
                type = event.button
         
         if pygame.time.get_ticks() > self.atk_start_time + \
-            (self.animator.curr_anim_frames * self.animator.curr_anim_speed):
+            (DEFAULT_FRAMETIME * self.animator.curr_anim_frames):
             # attack animation is over
             self.attacking = False
 
@@ -75,18 +80,18 @@ class Character(Actor):
         if type == 1:
             match self.facing:
                 case 'right':
-                    self.animator.animate('atk1', self.center)
+                    self.curr_anim = 'atk1'
                 case 'left':
-                    self.animator.animate('atk1f', self.center)
+                    self.curr_anim = 'atk1f'
             self.attacking = True
             self.atk_start_time = pygame.time.get_ticks()
             # attack # 2
         if type == 3:
             match self.facing:
                 case 'right':
-                    self.animator.animate('atk2', self.center)
+                    self.curr_anim = 'atk2'
                 case 'left':
-                    self.animator.animate('atk2f', self.center)
+                    self.curr_anim = 'atk2f'
             self.attacking = True
             self.atk_start_time = pygame.time.get_ticks()
 
@@ -94,9 +99,9 @@ class Character(Actor):
         # select idle animation, right or left
         if abs(self.velx) <= 0.2 and self.ground and not self.attacking:
             if self.facing == 'right':
-                self.animator.animate('idle', self.center)
+                self.curr_anim = 'idle'
             else:
-                self.animator.animate('idlef', self.center)
+                self.curr_anim = 'idlef'
 
     def jump(self):
         if not self.attacking:
@@ -105,14 +110,6 @@ class Character(Actor):
             if keys[pygame.K_SPACE] and self.ground:
                 self.accy -= JUMP_STRENGTH
                 self.ground = False
-        # not on ground? apply gravity
-        if not self.ground:
-            self.accy += GRAVITY
-            # in-air animation
-            if self.facing == 'right' and not self.attacking:
-                self.animator.animate('jump', self.center)
-            elif not self.attacking:
-                self.animator.animate('jumpf', self.center)
 
     def run(self):
         # list of all keys, 0 if not pressed, 1 if pressed
@@ -123,16 +120,25 @@ class Character(Actor):
                 self.accx = - self.agility
                 self.facing = 'left'
                 if self.ground:
-                    self.animator.animate('runf', self.center)
+                    self.curr_anim = 'runf'
             # move right
             if keys[pygame.K_d] and self.velx < self.max_speed:
                 self.accx = self.agility
                 self.facing = 'right'
                 if self.ground:
-                    self.animator.animate('run', self.center)
+                    self.curr_anim = 'run'
 
+    def midair(self):
+        # not on ground? apply gravity
+        if not self.ground:
+            self.accy += GRAVITY
+            # in-air animation
+            if self.facing == 'right' and not self.attacking:
+                self.curr_anim = 'jump'
+            elif not self.attacking:
+                self.curr_anim = 'jumpf'
 
-    def apply_physics(self):
+    def x_friction(self):
         # add friction to X movement
         if not abs(self.velx) < FRICTION:
             # if moving right...
@@ -144,6 +150,17 @@ class Character(Actor):
         else:
             self.velx = 0
 
+    def bounds(self):
+        # keep player on screen (x-axis)
+        bounds_check = self.is_out_of_bounds()
+        if bounds_check:
+            self.velx *= -1
+            if bounds_check == 1:
+                self.x = 0
+            else:
+                self.x = W - self.width
+
+    def apply_physics(self):
         # apply acceleration to velocity
         self.velx += self.accx
         self.vely += self.accy
@@ -155,42 +172,24 @@ class Character(Actor):
         # reset accel for next frame
         self.accx, self.accy = 0, 0
 
-
     def update_pos(self):
-        # keep player on screen (x-axis)
-        bounds_check = self.is_out_of_bounds()
-        if bounds_check:
-            self.velx *= -1
-            if bounds_check == 1:
-                self.x = 0
-            else:
-                self.x = W - self.width
-        
-        # Check if player is hitting the ground
-        if self.colliding_with():
-            self.ground = True
-            self.vely = 0
-            # Set player y value to be on the ground
-            #if abs((self.x + self.height) - (self.stage_rect[1])) > 0:
-            #    self.set_y(self.stage_rect[1] - self.height + 1)
-        else:
-            self.ground = False
-
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         self.center = self.rect.center
 
     # root function. calls all movement functions
-    def move(self):
-        
+    def move(self):    
         self.jump()
-        # self.idle()
         self.run()
-        self.attack()
         self.apply_physics()
+        self.x_friction()
+        self.bounds()
         self.update_pos()
-        # print(f"self.x {self.x}, self.y {self.y}")
-        
-        
+        self.attack()
+        self.midair()
+        self.hit_ground()
+        self.idle()
+
+        #this is ugly
         
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
