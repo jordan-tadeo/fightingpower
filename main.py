@@ -10,15 +10,10 @@ W, H = 720, 480
 
 
 def draw_frame(win, objs):
-    win.blit(bg, (0, 0))
     for o in objs:
-        try:
-            o.draw(win)
-        except Exception as e:
-            # pygame.draw.rect(win, STAGE_COLOR, (W, H))
-            traceback.print_exception(e)
-            pass
+        o.draw(win)
     pygame.display.update()
+    win.blit(bg, (0, 0))
 
 
 if __name__ == '__main__':
@@ -31,7 +26,7 @@ if __name__ == '__main__':
     bg = pygame.transform.scale(bg, (W, H))
 
     stage = Stage()
-    p = Character(100, 300, 300, stage)
+    p = Character(100, 300, 200, screen, stage=stage)
     # p2 = Character(100, 200, 200, True)
 
     world_objs = []
@@ -43,6 +38,8 @@ if __name__ == '__main__':
     running = True
     # Main loop
     while running:
+        draw_frame(screen, world_objs)
+        # stage.draw(screen)
         p.move()
         # receive p2 position from server
         """
@@ -64,5 +61,5 @@ if __name__ == '__main__':
             # Did the user click the window close button? If so, stop the loop.
             elif event.type == pygame.QUIT:
                 running = False
-        draw_frame(screen, world_objs)
+        
         clock.tick(60)
