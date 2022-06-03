@@ -62,7 +62,7 @@ class Stage:
         screen.blit(self.game_surface, (0, 0))
         count = 0
         for rect in self.collision_map:
-            pygame.draw.rect(screen, (255, 0, 0), rect, 1)
+            # pygame.draw.rect(screen, (255, 0, 0), rect, 1)
             count += 1
     
     def make_collision_map(self):

@@ -70,7 +70,7 @@ class Character:
         for rect in self.colliding_with():
             # if we are on top of this rect and inside it at least a bit
             if self.y + self.height >= rect.top and self.y + self.height <= \
-                rect.top + 16 and self.x + self.width > rect.x and self.x < rect.x + rect.width:
+                rect.top + 8 and self.x + self.width > rect.x and self.x < rect.x + rect.width:
                 self.vely = 0
                 self.ground = True
                 self.ground_y = rect.top
@@ -78,14 +78,14 @@ class Character:
                 self.y = rect.top - self.height - 1
             # if we are not within the X-bounds of this rect, we are hitting
             # it from the side
-            if not (self.x > rect.x and self.x + self.width < rect.x + rect.width):
+            elif not (self.x > rect.x and self.x + self.width < rect.x + rect.width):
                 dist_to_right = abs((self.x + self.width) - (rect.x + rect.width))
                 dist_to_left = abs(self.x - rect.x)
 
                 if dist_to_right < dist_to_left:
-                    self.x = rect.x + rect.width + 1
+                    self.x = rect.x + rect.width + 2
                 else:
-                    self.x = rect.x - self.width - 1
+                    self.x = rect.x - self.width - 2
                 self.velx *= -.50
                 
         
@@ -200,7 +200,8 @@ class Character:
     def apply_physics(self):
         # apply acceleration to velocity
         self.velx += self.accx
-        self.vely += self.accy
+        if self.vely < self.max_speed:
+            self.vely += self.accy
 
         # apply velocity to position
         self.x += self.velx
