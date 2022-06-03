@@ -40,7 +40,7 @@ class Stage:
 
 
     def read_from_csv(self):
-        with open('local/res/stage_1.csv', 'r') as csv_file:
+        with open('local/res/stage_3.csv', 'r') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             row, col = 0, 0
 

@@ -6,8 +6,8 @@ from local.animator import DEFAULT_FRAMETIME
 W, H = 720, 480
 BOX_COLOR = (120, 130, 30)
 GRAVITY = .35
-JUMP_STRENGTH = 8.0
-FRICTION = 0.5
+JUMP_STRENGTH = 7.0
+FRICTION = 0.2
 
 
 class Character:
@@ -22,7 +22,7 @@ class Character:
 
         self.velx, self.vely = 0, 0
         self.accx, self.accy = 0, 0
-        self.max_speed, self.agility = 7.5, 3.0
+        self.max_speed, self.agility = 5.5, 1.0
 
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         self.center = self.rect.center
@@ -86,7 +86,7 @@ class Character:
                     self.x = rect.x + rect.width + 1
                 else:
                     self.x = rect.x - self.width - 1
-                self.velx *= -1
+                self.velx *= -.50
                 
         
     # returns 1 if left side, 2 if right, 0 if within bounds
