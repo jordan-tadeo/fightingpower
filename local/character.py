@@ -5,7 +5,7 @@ from local.animator import DEFAULT_FRAMETIME
 
 W, H = 720, 480
 BOX_COLOR = (120, 130, 30)
-GRAVITY = .45
+GRAVITY = .35
 JUMP_STRENGTH = 8.0
 FRICTION = 0.5
 
@@ -28,11 +28,14 @@ class Character:
         self.center = self.rect.center
 
         self.ground = True
+        self.ground_y = 0
+        self.ground_rect = None
         self.facing = 'right'
         self.attacking = False
         self.atk_start_time = pygame.time.get_ticks()
 
         self.stage = stage
+        self.collision_map = self.stage.collision_map
         self.npc = npc
     
     # draw this character on 'win' pygame display obj
@@ -41,24 +44,51 @@ class Character:
         self.animator.curr_anim = self.curr_anim
         self.animator.animate(self.curr_anim, self.center)
     
-    # return if colliding with obj (only set up to work with stage rect rn)
+    # return list of stage rects that we are colliding with
     def colliding_with(self):
-        # return self.rect.colliderect(self.stage_rect)
-        pass
+        colliding_with = []
+        for rect in self.collision_map:
+            if self.rect.colliderect(rect):
+                colliding_with.append(rect)
+        return colliding_with
 
     def hit_ground(self):
+        # Check to see if we are still on any kind of platform.
+        # this is also where i prevent jittering when on the ground
+        
+        if (self.ground_rect and not (self.x + self.width / 2 > self.ground_rect.x \
+            and self.x + self.width / 2 < self.ground_rect.x + self.ground_rect.width)):
+            self.ground = False
+            
+        if not abs((self.y + self.height) - self.ground_y) < 2:
+            self.ground = False
+
         # Check if p is hitting the ground
         # if the pixels under the player are not black/trasparent,
         # then the player is on the ground
-        if not self.stage.game_surface.get_at((int(self.x), int(self.y) + self.height + 10)) == (0, 0, 0, 255):
-            while not self.stage.game_surface.get_at((int(self.x), int(self.y) + self.height)) == (0, 0, 0, 255):
-                self.y += 1
-            self.ground = True
-            self.vely = 0
+        # print(f'heres the culprit {self.colliding_with()}')
+        for rect in self.colliding_with():
+            # if we are on top of this rect and inside it at least a bit
+            if self.y + self.height >= rect.top and self.y + self.height <= \
+                rect.top + 16 and self.x + self.width > rect.x and self.x < rect.x + rect.width:
+                self.vely = 0
+                self.ground = True
+                self.ground_y = rect.top
+                self.ground_rect = rect
+                self.y = rect.top - self.height - 1
+            # if we are not within the X-bounds of this rect, we are hitting
+            # it from the side
+            if not (self.x > rect.x and self.x + self.width < rect.x + rect.width):
+                dist_to_right = abs((self.x + self.width) - (rect.x + rect.width))
+                dist_to_left = abs(self.x - rect.x)
 
-        else:
-            self.ground = False
-
+                if dist_to_right < dist_to_left:
+                    self.x = rect.x + rect.width + 1
+                else:
+                    self.x = rect.x - self.width - 1
+                self.velx *= -1
+                
+        
     # returns 1 if left side, 2 if right, 0 if within bounds
     def is_out_of_bounds(self):
         if self.x < 0:
@@ -111,9 +141,12 @@ class Character:
         if not self.attacking:
             keys = pygame.key.get_pressed()
             # jump
+
             if keys[pygame.K_SPACE] and self.ground:
                 self.accy -= JUMP_STRENGTH
                 self.ground = False
+                self.airtime_start = pygame.time.get_ticks()
+
 
     def run(self):
         # list of all keys, 0 if not pressed, 1 if pressed
@@ -160,9 +193,9 @@ class Character:
         if bounds_check:
             self.velx *= -1
             if bounds_check == 1:
-                self.x = 0
+                self.x = 2
             else:
-                self.x = W - self.width
+                self.x = W - self.width - 2
 
     def apply_physics(self):
         # apply acceleration to velocity
@@ -182,6 +215,7 @@ class Character:
 
     # root function. calls all movement functions
     def move(self):    
+        self.colliding_with()
         self.jump()
         self.run()
         self.apply_physics()
@@ -192,30 +226,12 @@ class Character:
         self.midair()
         self.hit_ground()
         self.idle()
+            
 
         # this is ugly
         
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-
-    def injure(self, body_part):
-        match body_part:
-            case "head":
-                self.set_health(self.get_health-20)
-            case "body":
-                self.set_health(self.get_health-10)
-            case "arm":
-                self.set_health(self.get_health-5)
-            case "leg":
-                self.set_health(self.get_health-5)
-
-    def is_alive(self):
-        return max(0, self.get_health())
-
-    def get_health(self):
-        return self.health
-    def set_health(self, health):
-        self.health = health
 
     def get_x(self):
         return self.x
