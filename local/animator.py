@@ -4,7 +4,7 @@ from os import *
 from local.imagehandler import ImageHandler
 
 DEFAULT_FRAMETIME = 64
-DEFAULT_SPRITE_SCALE = 2
+DEFAULT_SPRITE_SCALE = 1
 BLUE = (0, 0, 255)
 
 class Animator:

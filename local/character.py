@@ -16,7 +16,7 @@ class Character:
         self.health = health
         self.x = x
         self.y = y
-        self.width, self.height = 32, 92
+        self.width, self.height = 16, 46
         self.animator = Animator(window=screen)
         self.curr_anim = 'idle'
 
@@ -32,7 +32,8 @@ class Character:
         self.attacking = False
         self.atk_start_time = pygame.time.get_ticks()
 
-        self.stage_rect = stage.rect
+        if stage:
+            self.stage_rect = stage.rect
         self.npc = npc
     
     # draw this character on 'win' pygame display obj
@@ -43,7 +44,8 @@ class Character:
     
     # return if colliding with obj (only set up to work with stage rect rn)
     def colliding_with(self):
-        return self.rect.colliderect(self.stage_rect)
+        # return self.rect.colliderect(self.stage_rect)
+        pass
 
     def hit_ground(self):
         # Check if p is hitting the ground
@@ -51,7 +53,16 @@ class Character:
             self.ground = True
             self.vely = 0
             # Set player y value to be on the ground
-            self.set_y(self.stage_rect[1] - self.height + 1)
+
+
+
+            # self.set_y(self.stage_rect[1] - self.height + 1)
+
+
+
+
+
+
         else:
             self.ground = False
 
@@ -189,7 +200,7 @@ class Character:
         self.hit_ground()
         self.idle()
 
-        #this is ugly
+        # this is ugly
         
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

@@ -10,10 +10,11 @@ W, H = 720, 480
 
 
 def draw_frame(win, objs):
+    
     for o in objs:
         o.draw(win)
     pygame.display.update()
-    win.blit(bg, (0, 0))
+    # win.blit(bg, (0, 0))
 
 
 if __name__ == '__main__':
@@ -25,8 +26,10 @@ if __name__ == '__main__':
     bg = pygame.image.load('local/res/mountains.png')
     bg = pygame.transform.scale(bg, (W, H))
 
-    stage = Stage()
-    p = Character(100, 300, 200, screen, stage=stage)
+    screen.fill((90, 90, 90))
+    stage = Stage(screen)
+
+    p = Character(100, 300, 200, screen)
     # p2 = Character(100, 200, 200, True)
 
     world_objs = []
@@ -38,9 +41,11 @@ if __name__ == '__main__':
     running = True
     # Main loop
     while running:
-        draw_frame(screen, world_objs)
-        # stage.draw(screen)
+        screen.blit(bg, (0, 0))
         p.move()
+        p.draw(screen)
+        stage.draw(screen)
+        
         # receive p2 position from server
         """
         try:
@@ -63,3 +68,4 @@ if __name__ == '__main__':
                 running = False
         
         clock.tick(60)
+        pygame.display.update()
