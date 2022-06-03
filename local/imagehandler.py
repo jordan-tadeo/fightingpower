@@ -4,23 +4,18 @@ import pygame
 
 class ImageHandler(pygame.sprite.Sprite):
     # Takes an actual image (pygame surface), not a path to an image.
-    def __init__(self, image=None, rows_cols=(0, 0), sprite_size=(0, 0), debug=False):
+    def __init__(self, image=None, rows_cols=(0, 0), sprite_size=(0, 0)):
         self.image = image
         self.rows_cols = rows_cols
         self.sprite_size = sprite_size
         self.sprites = []
         
         if image and rows_cols and sprite_size:
-            if debug:
-                print('GOOD TO GO!!')
-                print(f'rows of sprites: {rows_cols[0]} cols: {rows_cols[1]}')
             # Each row will be a list within our 'sprites' list.
             debug_col_count = 0
             for row in range(rows_cols[0]):
                 curr_row = []
                 for col in range(rows_cols[1]):
-                    if debug:
-                        print(f'im on sprite number {debug_col_count} total. Currently on row {row}')
                     curr_row.append(self.image.subsurface(col * sprite_size[0], 
                         row * sprite_size[1], sprite_size[0], sprite_size[1]))
                     debug_col_count += 1
@@ -45,9 +40,6 @@ class ImageHandler(pygame.sprite.Sprite):
     def sprite_from_num(self, num):
         row, col = 0, 0
         for i in range(num):
-            print(f'our sprites list has {len(self.sprites)} rows, and {len(self.sprites[0])} cols')
-            print(f'row: {row}')
-            print(f'    -> col: {col}')
             if col < len(self.sprites[0]) - 1:
                 col += 1
             else:

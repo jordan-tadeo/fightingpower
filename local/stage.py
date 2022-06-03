@@ -15,11 +15,14 @@ class Stage:
         self.screen = screen
         self.game_surface = pygame.Surface((W, H))
         self.image = pygame.image.load(path)
-        self.img_handler = ImageHandler(self.image, (12, 8), (SPRITE_SIZE, SPRITE_SIZE), True)
+        self.img_handler = ImageHandler(self.image, (12, 8), (SPRITE_SIZE, SPRITE_SIZE))
         self.read_from_csv()
         
         self.game_surface.convert_alpha()
         self.game_surface.set_colorkey((0, 0, 0))
+        self.game_surface = pygame.transform.scale(self.game_surface, \
+                                     (W * DEFAULT_SCALE, H * DEFAULT_SCALE))
+
 
     def read_from_csv(self):
         with open('local/res/stage_1.csv', 'r') as csv_file:
@@ -42,7 +45,5 @@ class Stage:
     
     def draw(self, screen):
         # print(f'this how many sprites we got on the sheet -> {len(self.img_handler.sprites)}')
-        self.game_surface = pygame.transform.scale(self.game_surface, \
-                                     (W * DEFAULT_SCALE, H * DEFAULT_SCALE))
         screen.blit(self.game_surface, (0, 0))
                 

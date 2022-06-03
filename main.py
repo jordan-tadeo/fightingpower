@@ -29,7 +29,7 @@ if __name__ == '__main__':
     screen.fill((90, 90, 90))
     stage = Stage(screen)
 
-    p = Character(100, 300, 200, screen)
+    p = Character(100, 300, 200, screen, stage)
     # p2 = Character(100, 200, 200, True)
 
     world_objs = []

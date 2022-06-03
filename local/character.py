@@ -32,8 +32,7 @@ class Character:
         self.attacking = False
         self.atk_start_time = pygame.time.get_ticks()
 
-        if stage:
-            self.stage_rect = stage.rect
+        self.stage = stage
         self.npc = npc
     
     # draw this character on 'win' pygame display obj
@@ -49,19 +48,13 @@ class Character:
 
     def hit_ground(self):
         # Check if p is hitting the ground
-        if self.colliding_with():
+        # if the pixels under the player are not black/trasparent,
+        # then the player is on the ground
+        if not self.stage.game_surface.get_at((int(self.x), int(self.y) + self.height + 10)) == (0, 0, 0, 255):
+            while not self.stage.game_surface.get_at((int(self.x), int(self.y) + self.height)) == (0, 0, 0, 255):
+                self.y += 1
             self.ground = True
             self.vely = 0
-            # Set player y value to be on the ground
-
-
-
-            # self.set_y(self.stage_rect[1] - self.height + 1)
-
-
-
-
-
 
         else:
             self.ground = False
